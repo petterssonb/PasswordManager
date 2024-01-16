@@ -1,5 +1,49 @@
 #include "passwordManager.h"
 
+void PasswordManager::createUser(){
+    while(true){
+        std::cout << "Enter username: " << std::endl;
+        std::cin >> username;
+
+        if(isValidName(username)){
+            std::cout << "Valid email address." << std::endl;
+            break;
+        } else{
+            std::cout << "Invalid email address." << std::endl;
+            continue;
+        }
+
+        std::cout << "Enter password: "  << std::endl;
+        std::cin >> password;
+
+        if(isValidPassword(password)){
+            std::cout << "Valid password." << std::endl;
+            break;
+        } else{
+            std::cout << "Invalid password." << std::endl;
+            continue;
+        }
+    }
+
+
+}
+
+bool PasswordManager::isValidName(const std::string& username){
+    std::regex pattern(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
+
+    return std::regex_match(username, pattern);
+}
+
+bool PasswordManager::isValidPassword(const std::string& password){
+    std::regex pattern("(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,}");
+
+    return std::regex_match(password, pattern);
+}
+
+void hashPassword(){
+    
+
+}
 
 void PasswordManager::menu(){
 
