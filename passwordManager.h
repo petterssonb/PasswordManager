@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <regex>
+#include <openssl/md5.h> // fråga stefan på fredag varför includen blir röd permanent
+#include <fstream>
+#include <set>
 
 class PasswordManager{
 public:
@@ -13,8 +16,8 @@ public:
     bool isValidName(const std::string& username);
     bool isValidPassword(const std::string& password);
     void hashPassword();
-    void testLogin();
     void saveToFile();
+    void testLogin();
     bool existsInFile(const std::string& username);
     void menu();
 

@@ -18,6 +18,8 @@ void PasswordManager::createUser(){
 
         if(isValidPassword(password)){
             std::cout << "Valid password." << std::endl;
+            hashPassword();
+            saveToFile();
             break;
         } else{
             std::cout << "Invalid password." << std::endl;
@@ -40,9 +42,50 @@ bool PasswordManager::isValidPassword(const std::string& password){
     return std::regex_match(password, pattern);
 }
 
-void hashPassword(){
-    
+void PasswordManager::hashPassword(){
+    MD5_CTX hashedPassword;
+    MD5_Init(&hashedPassword);
+    MD5_Update(&hashedPassword, password.c_str(), password.length());
 
+    unsigned char hash[MD5_DIGEST_LENGTH];
+    MD5_Final(hash, &hashedPassword);
+
+    char hashedStr[MD5_DIGEST_LENGTH * 2 + 1];
+    for(int i = 0; i < MD5_DIGEST_LENGTH; ++i){
+        sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+    }
+
+    password = hashedStr;
+}
+
+void PasswordManager::saveToFile(){
+    std::ofstream usersFile("users.txt", std::ios::app);
+
+    if(!usersFile.is_open()){
+        std::cerr << "Error opening file." << std::endl;
+        return;
+    }
+
+    std::set<std::string> existingUsers;
+    std::ifstream inFile("users.txt");
+    std::string line;
+
+    while(std::getline(inFile, line)){
+        size_t pos = line.find(':');
+        if(pos != std::string::npos){
+            std::string user = line.substr(0, pos);
+            existingUsers.insert(user);
+        }
+    }
+
+    inFile.close();
+
+    if(existingUsers.find(username != existingUsers.end())){
+        std::cout << "Error: User already exists." << std::endl;
+        return;
+    }
+
+    usersFile << username << ":" << password << std::endl;
 }
 
 void PasswordManager::menu(){

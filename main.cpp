@@ -1,8 +1,9 @@
-#include <iostream>
 #include "passwordManager.h"
 
 int main(){
-
+    
+    PasswordManager passwordmanager;
+    passwordmanager.menu();
 
 
 
