@@ -1,8 +1,8 @@
 PROG = main.exe
 SRC = main.cpp passwordManager.cpp
 CFLAGS = -g -std=c++20 -Wall
-LIBS = -lssl -lcrypto
-INCLUDES = -I/usr/local/opt/openssl/include
+LIBS = -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
+INCLUDES = -I/opt/homebrew/opt/openssl@3/include
 CC = g++
 
 all: $(PROG)

@@ -66,7 +66,15 @@ void PasswordManager::saveToFile(){
         return;
     }
 
-    std::set<std::string> existingUsers;
+    if(existsInFile(username)){
+        std::cout << "Error: User already exists." << std::endl;
+        return;
+    }
+
+    usersFile << username << ":" << password << std::endl;
+}
+
+bool PasswordManager::existsInFile(const std::string& username){
     std::ifstream inFile("users.txt");
     std::string line;
 
@@ -74,18 +82,14 @@ void PasswordManager::saveToFile(){
         size_t pos = line.find(':');
         if(pos != std::string::npos){
             std::string user = line.substr(0, pos);
-            existingUsers.insert(user);
+            if(user == username){
+                inFile.close();
+                return true;
+            }
         }
     }
-
     inFile.close();
-
-    if(existingUsers.find(username != existingUsers.end())){
-        std::cout << "Error: User already exists." << std::endl;
-        return;
-    }
-
-    usersFile << username << ":" << password << std::endl;
+    return false;
 }
 
 void PasswordManager::menu(){

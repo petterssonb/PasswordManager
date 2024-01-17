@@ -6,6 +6,7 @@
 #include <openssl/md5.h> // fråga stefan på fredag varför includen blir röd permanent
 #include <fstream>
 #include <set>
+#include <string>
 
 class PasswordManager{
 public:
@@ -17,8 +18,8 @@ public:
     bool isValidPassword(const std::string& password);
     void hashPassword();
     void saveToFile();
-    void testLogin();
     bool existsInFile(const std::string& username);
+    void testLogin();
     void menu();
 
 };
