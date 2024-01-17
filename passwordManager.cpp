@@ -5,11 +5,11 @@ void PasswordManager::createUser(){
         std::cout << "Enter username: " << std::endl;
         std::cin >> username;
 
-        if(isValidName(username)){
+        if(isValidName(username) && !existsInFile(username)){
             std::cout << "Valid email address." << std::endl;
             break;
         } else{
-            std::cout << "Invalid email address." << std::endl;
+            std::cout << "Invalid email address or the user exsists" << std::endl;
             continue;
         }
 
@@ -90,6 +90,58 @@ bool PasswordManager::existsInFile(const std::string& username){
     }
     inFile.close();
     return false;
+}
+
+void PasswordManager::testLogin(){
+    std::cout << "Enter username: ";
+    std::cin >> username;
+
+    if(existsInFile(username)){
+        std::cout << "Enter password: ";
+        std::cin >> password;
+
+        hashPassword();
+
+        std::ifstream inFile("users.txt");
+        std::string line;
+
+        while(std::getline(inFile, line)){
+            size_t pos = line.find(':');
+            if(pos != std::string::npos){
+                std::string user = line.substr(0, pos);
+                std::string storedPassword = line.substr(pos + 1);
+
+                if(user == username){
+                    if(storedPassword == password){
+                        std::cout << "OK Login successful! Welcome, " << username << "!" << std::endl;
+                        return;
+                    } else{
+                        std::cerr << "Login failed, incorrect password." << std::endl;
+                        inFile.close();
+                        return;
+                    }
+                }
+            }
+        }
+        std::cerr << "User not found. Login failed" << std::endl;
+        inFile.close();
+    } else{
+        std::cerr << "User not found. Login failed" << std::endl;
+    }
+}
+
+std::string PasswordManager::generateSalt(){
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    const std::string charactersInSalt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    const size_t saltLenght = 32;
+
+    std::string salt;
+    for(size_t i = 0; i < saltLenght; ++i){
+        salt += charactersInSalt[rand() % charactersInSalt.length()];
+    }
+
+    return salt;
 }
 
 void PasswordManager::menu(){
