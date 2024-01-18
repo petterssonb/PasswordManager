@@ -19,6 +19,7 @@ void PasswordManager::createUser(){
         std::cin >> password;
 
         if(isValidPassword(password)){
+            std::string saltedPassword = generateSalt(password);
             hashPassword();
             saveToFile();
             break;
@@ -131,7 +132,7 @@ void PasswordManager::testLogin(){
     }
 }
 
-std::string PasswordManager::generateSalt(){
+std::string PasswordManager::generateSalt(std::string pwd){
     srand(static_cast<unsigned int>(time(nullptr)));
 
     const std::string charactersInSalt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
@@ -142,7 +143,7 @@ std::string PasswordManager::generateSalt(){
         salt += charactersInSalt[rand() % charactersInSalt.length()];
     }
 
-    return salt;
+    return salt + pwd;
 }
 
 void PasswordManager::menu(){

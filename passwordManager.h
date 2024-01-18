@@ -20,7 +20,7 @@ public:
     void saveToFile();
     bool existsInFile(const std::string& username);
     void testLogin();
-    std::string generateSalt();
+    std::string generateSalt(std::string pwd);
     void menu();
 
 };
