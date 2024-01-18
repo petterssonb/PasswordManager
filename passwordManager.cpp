@@ -6,18 +6,19 @@ void PasswordManager::createUser(){
         std::cin >> username;
 
         if(isValidName(username) && !existsInFile(username)){
-            std::cout << "Valid email address." << std::endl;
             break;
         } else{
             std::cout << "Invalid email address or the user exsists" << std::endl;
             continue;
         }
+    }
 
+
+    while(true){
         std::cout << "Enter password: "  << std::endl;
         std::cin >> password;
 
         if(isValidPassword(password)){
-            std::cout << "Valid password." << std::endl;
             hashPassword();
             saveToFile();
             break;
@@ -37,7 +38,7 @@ bool PasswordManager::isValidName(const std::string& username){
 }
 
 bool PasswordManager::isValidPassword(const std::string& password){
-    std::regex pattern("(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,}");
+    std::regex pattern("^(?=.*[a-z]|.*[A-Z])(?=.*\\d)(?=.*[@#%^&+=!]).{8,}$");
 
     return std::regex_match(password, pattern);
 }
