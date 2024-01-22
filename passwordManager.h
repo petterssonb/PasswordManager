@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <regex>
-#include <openssl/md5.h> // fråga stefan på fredag varför includen blir röd permanent
+#include <openssl/md5.h>
+#include <openssl/sha.h>
 #include <fstream>
 #include <set>
 #include <string>
@@ -12,15 +13,17 @@ class PasswordManager{
 public:
     std::string username;
     std::string password;
+    std::string hashedPassword;
 
     void createUser();
     bool isValidName(const std::string& username);
     bool isValidPassword(const std::string& password);
-    void hashPassword();
-    void saveToFile();
+    std::string hashPasswordMD5(const std::string& inputPassword);
+    void hashPasswordSHA256();
+    void saveToFile(std::string username, std::string hashedPassword, std::string salt);
     bool existsInFile(const std::string& username);
     void testLogin();
-    std::string generateSalt(std::string pwd);
+    std::string generateSalt();
     void menu();
 
 };

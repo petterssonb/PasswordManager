@@ -19,9 +19,10 @@ void PasswordManager::createUser(){
         std::cin >> password;
 
         if(isValidPassword(password)){
-            std::string saltedPassword = generateSalt(password);
-            hashPassword();
-            saveToFile();
+            std::string salt = generateSalt();
+            std::string saltedPassword = salt + password;
+            std::string hashedPassword = salt + hashPasswordMD5(password);
+            saveToFile(username, hashedPassword, salt);
             break;
         } else{
             std::cout << "Invalid password." << std::endl;
@@ -44,10 +45,10 @@ bool PasswordManager::isValidPassword(const std::string& password){
     return std::regex_match(password, pattern);
 }
 
-void PasswordManager::hashPassword(){
+std::string PasswordManager::hashPasswordMD5(const std::string& inputPassword){
     MD5_CTX hashedPassword;
     MD5_Init(&hashedPassword);
-    MD5_Update(&hashedPassword, password.c_str(), password.length());
+    MD5_Update(&hashedPassword, inputPassword.c_str(), inputPassword.length());
 
     unsigned char hash[MD5_DIGEST_LENGTH];
     MD5_Final(hash, &hashedPassword);
@@ -57,10 +58,26 @@ void PasswordManager::hashPassword(){
         sprintf(&hashedStr[i * 2], "%02x", hash[i]);
     }
 
+    return hashedStr;
+}
+
+void PasswordManager::hashPasswordSHA256(){
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, password.c_str(), password.length());
+
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_Final(hash, &sha256);
+
+    char hashedStr[SHA256_DIGEST_LENGTH * 2 + 1];
+    for(int i = 0; i < SHA256_DIGEST_LENGTH; ++i){
+        sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+    }
+
     password = hashedStr;
 }
 
-void PasswordManager::saveToFile(){
+void PasswordManager::saveToFile(std::string username, std::string hashedPassword, std::string salt){
     std::ofstream usersFile("users.txt", std::ios::app);
 
     if(!usersFile.is_open()){
@@ -73,7 +90,12 @@ void PasswordManager::saveToFile(){
         return;
     }
 
-    usersFile << username << ":" << password << std::endl;
+    salt = generateSalt();
+    std::string saltedPassword = salt + password;
+
+    hashedPassword = hashPasswordMD5(saltedPassword);
+
+    usersFile << username << ":" << salt << ":" << hashedPassword << std::endl;
 }
 
 bool PasswordManager::existsInFile(const std::string& username){
@@ -102,7 +124,6 @@ void PasswordManager::testLogin(){
         std::cout << "Enter password: ";
         std::cin >> password;
 
-        hashPassword();
 
         std::ifstream inFile("users.txt");
         std::string line;
@@ -111,11 +132,20 @@ void PasswordManager::testLogin(){
             size_t pos = line.find(':');
             if(pos != std::string::npos){
                 std::string user = line.substr(0, pos);
-                std::string storedPassword = line.substr(pos + 1);
+                std::string storedPasswordWithSalt = line.substr(pos + 1);
 
                 if(user == username){
-                    if(storedPassword == password){
+                    size_t saltPos = storedPasswordWithSalt.find(':');
+                    std::string storedSalt = storedPasswordWithSalt.substr(0, saltPos);
+                    std::string storedPassword = storedPasswordWithSalt.substr(saltPos + 1);
+
+                    std::string saltedInputPassword = storedSalt + password;
+                    std::string hashedInputPassword = hashPasswordMD5(saltedInputPassword);
+
+
+                    if(storedPassword == hashedInputPassword){
                         std::cout << "OK Login successful! Welcome, " << username << "!" << std::endl;
+                        inFile.close();
                         return;
                     } else{
                         std::cerr << "Login failed, incorrect password." << std::endl;
@@ -132,7 +162,7 @@ void PasswordManager::testLogin(){
     }
 }
 
-std::string PasswordManager::generateSalt(std::string pwd){
+std::string PasswordManager::generateSalt(){
     srand(static_cast<unsigned int>(time(nullptr)));
 
     const std::string charactersInSalt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
@@ -143,24 +173,26 @@ std::string PasswordManager::generateSalt(std::string pwd){
         salt += charactersInSalt[rand() % charactersInSalt.length()];
     }
 
-    return salt + pwd;
+    return salt;
 }
 
 void PasswordManager::menu(){
 
-    while(true){
-    std::cout << "1. Create User" << std::endl;
-    std::cout << "2. Login" << std::endl;
-    std::cout << "3. Exit program" << std::endl;
-    int choice;
-    std::cin >> choice;
+    int hashChoice;
 
-        switch(choice){
+    while(true){
+        std::cout << "Choose hash function: " << std::endl;
+        std::cout << "1. MD5" << std::endl;
+        std::cout << "2. SHA-256" << std::endl;
+        std::cout << "3. Exit program" << std::endl;
+        std::cin >> hashChoice;
+
+        switch(hashChoice){
             case 1:
-                createUser();
+                std::cout << "Unsafe hash function selected (beware of bad choice)" << std::endl;
                 break;
             case 2:
-                testLogin();
+                std::cout << "Safe and sound hash function selected (beware of good choice)" << std::endl;
                 break;
             case 3:
                 std::cout << "Shutting down program." << std::endl;
@@ -169,8 +201,37 @@ void PasswordManager::menu(){
                 std::cerr << "Invalid choice." << std::endl;
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                break;
-            
+                continue;
+        }
+            while(true){
+                std::cout << "1. Create User" << std::endl;
+                std::cout << "2. Login" << std::endl;
+                std::cout << "3. Back to hash function selection" << std::endl;
+                int choice;
+                std::cin >> choice;
+
+                    switch(choice){
+                        case 1:
+                            createUser();
+                            break;
+                        case 2:
+                            testLogin();
+                            break;
+                        case 3:
+                            std::cout << "Returning to hash function selection." << std::endl;
+                            return;
+                        default:
+                            std::cerr << "Invalid choice." << std::endl;
+                            std::cin.clear();
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            break;
+                        
+                    }
+                    if(choice == 3){
+                        break;
+                    }
         }
     }
+
+  
 }
