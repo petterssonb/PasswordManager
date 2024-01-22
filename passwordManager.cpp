@@ -165,7 +165,7 @@ void PasswordManager::testLogin(){
 std::string PasswordManager::generateSalt(){
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    const std::string charactersInSalt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    const std::string charactersInSalt = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*_+";
     const size_t saltLenght = 32;
 
     std::string salt;
