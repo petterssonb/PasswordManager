@@ -10,6 +10,9 @@
 #include <string>
 
 class PasswordManager{
+private:
+    int hashChoice;
+
 public:
     std::string username;
     std::string password;
@@ -20,7 +23,7 @@ public:
     bool isValidPassword(const std::string& password);
     std::string hashPasswordMD5(const std::string& inputPassword);
     std::string hashPasswordSHA256(const std::string& inputPassword);
-    void saveToFile(std::string username, std::string hashedPassword, std::string salt);
+    void saveToFile(const std::string &username, const std::string &hashedPassword, const std::string &salt);
     bool existsInFile(const std::string& username);
     void testLogin();
     std::string generateSalt();

@@ -1,7 +1,7 @@
 #include "passwordManager.h"
 
 void PasswordManager::createUser(){
-     int hashChoice;
+
 
     while(true){
         std::cout << "Choose hash function: " << std::endl;
@@ -48,10 +48,10 @@ void PasswordManager::createUser(){
             std::string saltedPassword = salt + password;
 
             if(hashChoice == 1){
-            std::string hashedPassword = salt + hashPasswordMD5(saltedPassword);
+            std::string hashedPassword = hashPasswordMD5(saltedPassword);
             saveToFile(username, hashedPassword, salt);
             } else if(hashChoice == 2){
-                std::string hashedPassword = salt + hashPasswordSHA256(saltedPassword);
+                std::string hashedPassword = hashPasswordSHA256(saltedPassword);
                 saveToFile(username, hashedPassword, salt);
             }
             break;
@@ -111,7 +111,7 @@ std::string PasswordManager::hashPasswordSHA256(const std::string& inputPassword
     return hashedStr;
 }
 
-void PasswordManager::saveToFile(std::string username, std::string hashedPassword, std::string salt){
+void PasswordManager::saveToFile(const std::string &username, const std::string &hashedPassword, const std::string &salt){
     std::ofstream usersFile("users.txt", std::ios::app);
 
     if(!usersFile.is_open()){
@@ -124,10 +124,7 @@ void PasswordManager::saveToFile(std::string username, std::string hashedPasswor
         return;
     }
 
-    salt = generateSalt();
-    std::string saltedPassword = salt + password;
-
-    hashedPassword = hashPasswordMD5(saltedPassword);
+    
 
     usersFile << username << ":" << salt << ":" << hashedPassword << std::endl;
 }
@@ -174,18 +171,36 @@ void PasswordManager::testLogin(){
                     std::string storedPassword = storedPasswordWithSalt.substr(saltPos + 1);
 
                     std::string saltedInputPassword = storedSalt + password;
+
+                    if(hashChoice == 1){
                     std::string hashedInputPassword = hashPasswordMD5(saltedInputPassword);
 
+                        if(storedPassword == hashedInputPassword){
+                            std::cout << "OK Login successful! Welcome, " << username << "!" << std::endl;
+                            inFile.close();
+                            return;
+                        } else{
+                            std::cerr << "Login failed, incorrect password." << std::endl;
+                            inFile.close();
+                            return;
+                        }
+                    } else if(hashChoice == 2){
+                        std::string hashedInputPassword = hashPasswordSHA256(saltedInputPassword);
 
-                    if(storedPassword == hashedInputPassword){
-                        std::cout << "OK Login successful! Welcome, " << username << "!" << std::endl;
-                        inFile.close();
-                        return;
-                    } else{
-                        std::cerr << "Login failed, incorrect password." << std::endl;
-                        inFile.close();
-                        return;
+                            if(storedPassword == hashedInputPassword){
+                                std::cout << "Ok Login successful! Welcome, " << username << "!" << std::endl;
+                                inFile.close();
+                                return;
+                            } else{
+                                std::cerr << "Login failed, incorrect password." << std::endl;
+                                inFile.close();
+                                return;
+                            }
+
                     }
+
+
+                    
                 }
             }
         }
