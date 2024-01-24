@@ -1,6 +1,31 @@
 #include "passwordManager.h"
 
 void PasswordManager::createUser(){
+     int hashChoice;
+
+    while(true){
+        std::cout << "Choose hash function: " << std::endl;
+        std::cout << "1. MD5" << std::endl;
+        std::cout << "2. SHA-256" << std::endl;
+        std::cout << "3. Back to main menu" << std::endl;
+        std::cin >> hashChoice;
+
+        switch(hashChoice){
+            case 1:
+                std::cout << "Unsafe hash function selected (beware of bad choice)" << std::endl;
+                break;
+            case 2:
+                std::cout << "Safe and sound hash function selected (beware of good choice)" << std::endl;
+                break;
+            case 3:
+                std::cout << "Returned to main menu" << std::endl;
+                return;
+            default:
+                std::cerr << "Invalid choice." << std::endl;
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+        }
     while(true){
         std::cout << "Enter username: " << std::endl;
         std::cin >> username;
@@ -21,13 +46,22 @@ void PasswordManager::createUser(){
         if(isValidPassword(password)){
             std::string salt = generateSalt();
             std::string saltedPassword = salt + password;
-            std::string hashedPassword = salt + hashPasswordMD5(password);
+
+            if(hashChoice == 1){
+            std::string hashedPassword = salt + hashPasswordMD5(saltedPassword);
             saveToFile(username, hashedPassword, salt);
+            } else if(hashChoice == 2){
+                std::string hashedPassword = salt + hashPasswordSHA256(saltedPassword);
+                saveToFile(username, hashedPassword, salt);
+            }
             break;
+
         } else{
             std::cout << "Invalid password." << std::endl;
             continue;
         }
+    }
+    break;
     }
 
 
@@ -61,10 +95,10 @@ std::string PasswordManager::hashPasswordMD5(const std::string& inputPassword){
     return hashedStr;
 }
 
-void PasswordManager::hashPasswordSHA256(){
+std::string PasswordManager::hashPasswordSHA256(const std::string& inputPassword){
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, password.c_str(), password.length());
+    SHA256_Update(&sha256, inputPassword.c_str(), inputPassword.length());
 
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_Final(hash, &sha256);
@@ -74,7 +108,7 @@ void PasswordManager::hashPasswordSHA256(){
         sprintf(&hashedStr[i * 2], "%02x", hash[i]);
     }
 
-    password = hashedStr;
+    return hashedStr;
 }
 
 void PasswordManager::saveToFile(std::string username, std::string hashedPassword, std::string salt){
@@ -178,35 +212,11 @@ std::string PasswordManager::generateSalt(){
 
 void PasswordManager::menu(){
 
-    int hashChoice;
 
-    while(true){
-        std::cout << "Choose hash function: " << std::endl;
-        std::cout << "1. MD5" << std::endl;
-        std::cout << "2. SHA-256" << std::endl;
-        std::cout << "3. Exit program" << std::endl;
-        std::cin >> hashChoice;
-
-        switch(hashChoice){
-            case 1:
-                std::cout << "Unsafe hash function selected (beware of bad choice)" << std::endl;
-                break;
-            case 2:
-                std::cout << "Safe and sound hash function selected (beware of good choice)" << std::endl;
-                break;
-            case 3:
-                std::cout << "Shutting down program." << std::endl;
-                return;
-            default:
-                std::cerr << "Invalid choice." << std::endl;
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                continue;
-        }
             while(true){
                 std::cout << "1. Create User" << std::endl;
                 std::cout << "2. Login" << std::endl;
-                std::cout << "3. Back to hash function selection" << std::endl;
+                std::cout << "3. Exit program" << std::endl;
                 int choice;
                 std::cin >> choice;
 
@@ -218,8 +228,8 @@ void PasswordManager::menu(){
                             testLogin();
                             break;
                         case 3:
-                            std::cout << "Returning to hash function selection." << std::endl;
-                            return;
+                            std::cout << "Shutting down program." << std::endl;
+                            break;
                         default:
                             std::cerr << "Invalid choice." << std::endl;
                             std::cin.clear();
@@ -233,5 +243,4 @@ void PasswordManager::menu(){
         }
     }
 
-  
-}
+
