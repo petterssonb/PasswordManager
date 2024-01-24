@@ -19,7 +19,7 @@ public:
     bool isValidName(const std::string& username);
     bool isValidPassword(const std::string& password);
     std::string hashPasswordMD5(const std::string& inputPassword);
-    void hashPasswordSHA256();
+    std::string hashPasswordSHA256(const std::string& inputPassword);
     void saveToFile(std::string username, std::string hashedPassword, std::string salt);
     bool existsInFile(const std::string& username);
     void testLogin();
