@@ -49,12 +49,16 @@ void PasswordManager::createUser(){
 
             if(hashChoice == 1){
             std::string hashedPassword = hashPasswordMD5(saltedPassword);
+            crackableHash = hashPasswordMD5(password);
             saveToFile(username, hashedPassword, salt);
+            saveCrackableToFile(username, crackableHash);
             } else if(hashChoice == 2){
                 std::string hashedPassword = hashPasswordSHA256(saltedPassword);
+                crackableHash256 = hashPasswordSHA256(password);
                 saveToFile(username, hashedPassword, salt);
+                saveCrackableToFile(username, crackableHash256);
             }
-            break;
+            return;
 
         } else{
             std::cout << "Invalid password." << std::endl;
@@ -111,7 +115,17 @@ std::string PasswordManager::hashPasswordSHA256(const std::string& inputPassword
     return hashedStr;
 }
 
+
+
 void PasswordManager::saveToFile(const std::string &username, const std::string &hashedPassword, const std::string &salt){
+
+    
+
+    if(existsInFile(username)){
+        std::cout << "Error: User already exists." << std::endl;
+        return;
+    }
+
     std::ofstream usersFile("users.txt", std::ios::app);
 
     if(!usersFile.is_open()){
@@ -119,14 +133,25 @@ void PasswordManager::saveToFile(const std::string &username, const std::string 
         return;
     }
 
-    if(existsInFile(username)){
-        std::cout << "Error: User already exists." << std::endl;
-        return;
-    }
-
     
 
     usersFile << username << ":" << salt << ":" << hashedPassword << std::endl;
+}
+
+void PasswordManager::saveCrackableToFile(const std::string &username, const std::string &hashedPassword){
+    
+
+
+    std::ofstream hashFile("hashes.txt", std::ios::app);
+
+    if(!hashFile.is_open()){
+        std::cerr << "Error opening hashes file." << std::endl;
+        return;
+    }
+
+    hashFile << username << ":" << hashedPassword << std::endl;
+
+    hashFile.close();
 }
 
 bool PasswordManager::existsInFile(const std::string& username){
@@ -143,6 +168,8 @@ bool PasswordManager::existsInFile(const std::string& username){
             }
         }
     }
+
+    
     inFile.close();
     return false;
 }
@@ -232,6 +259,7 @@ void PasswordManager::menu(){
                 std::cout << "1. Create User" << std::endl;
                 std::cout << "2. Login" << std::endl;
                 std::cout << "3. Exit program" << std::endl;
+                std::cout << "4. Crack Passwords" << std::endl;
                 int choice;
                 std::cin >> choice;
 
@@ -245,6 +273,9 @@ void PasswordManager::menu(){
                         case 3:
                             std::cout << "Shutting down program." << std::endl;
                             break;
+                        case 4:
+                            compareHashes(hashFilePath, commonPasswordsFilePath);
+                            break;
                         default:
                             std::cerr << "Invalid choice." << std::endl;
                             std::cin.clear();
@@ -257,5 +288,58 @@ void PasswordManager::menu(){
                     }
         }
     }
+
+void PasswordManager::compareHashes(std::string& hashFilePath, std::string& commonPasswordsFilePath){
+
+    std::cout << "Enter path to hash file: ";
+    std::cin >> hashFilePath;
+
+    std::cout << "Enter path to common passwords file: ";
+    std::cin >> commonPasswordsFilePath;
+
+    std::unordered_map<std::string, std::string> passwordHashes;
+
+    std::ifstream hashFile(hashFilePath);
+    if(!hashFile.is_open()){
+        std::cerr << "Error opening hash file" << std::endl;
+        return;
+    }
+
+    std::string line;
+    while(std::getline(hashFile, line)){
+        size_t pos = line.find(':');
+        if(pos != std::string::npos){
+            std::string user = line.substr(0, pos);
+            std::string hash = line.substr(pos + 1);
+            passwordHashes[user] = hash;
+        }
+    }
+    hashFile.close();
+
+    std::ifstream commonPasswordsFile(commonPasswordsFilePath);
+    if(!commonPasswordsFile.is_open()){
+        std::cerr << "Error opening common passwords file." << std::endl;
+        return;
+    }
+
+    bool foundSome = false;
+
+    while(std::getline(commonPasswordsFile, line)){
+        std::string hashedPasswordMD5Local = hashPasswordMD5(line);
+        std::string hashedPasswordSHA256Local = hashPasswordSHA256(line);
+
+        for(const auto& entry : passwordHashes){
+            if(entry.second == hashedPasswordMD5Local || entry.second == hashedPasswordSHA256Local){
+                std::cout << "Match found for user: " << entry.first << " Password: " << line << std::endl;
+                foundSome = true;
+            }
+        } 
+    }
+    commonPasswordsFile.close();
+
+    if(!foundSome){
+        std::cout << "No matches found inside the file." << std::endl;
+    }
+}
 
 

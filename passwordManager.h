@@ -8,10 +8,15 @@
 #include <fstream>
 #include <set>
 #include <string>
+#include <unordered_map>
 
 class PasswordManager{
 private:
     int hashChoice;
+    std::string hashFilePath;
+    std::string commonPasswordsFilePath;
+    std::string crackableHash;
+    std::string crackableHash256;
 
 public:
     std::string username;
@@ -24,10 +29,12 @@ public:
     std::string hashPasswordMD5(const std::string& inputPassword);
     std::string hashPasswordSHA256(const std::string& inputPassword);
     void saveToFile(const std::string &username, const std::string &hashedPassword, const std::string &salt);
+    void saveCrackableToFile(const std::string &username, const std::string &hashedPassword);
     bool existsInFile(const std::string& username);
     void testLogin();
     std::string generateSalt();
     void menu();
+    void compareHashes(std::string& hashFilePath, std::string& commonPasswordsFilePath);
 
 };
 
