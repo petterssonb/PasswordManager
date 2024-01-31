@@ -86,33 +86,37 @@ bool PasswordManager::isValidPassword(const std::string& password){
 std::string PasswordManager::hashPasswordMD5(const std::string& inputPassword){
     MD5_CTX hashedPassword;
     MD5_Init(&hashedPassword);
-    MD5_Update(&hashedPassword, inputPassword.c_str(), inputPassword.length());
+    MD5_Update(&hashedPassword, inputPassword.data(), inputPassword.size());
 
     unsigned char hash[MD5_DIGEST_LENGTH];
     MD5_Final(hash, &hashedPassword);
 
-    char hashedStr[MD5_DIGEST_LENGTH * 2 + 1];
+    //char hashedStr[MD5_DIGEST_LENGTH * 2 + 1];
+    std::stringstream hashedStr;
     for(int i = 0; i < MD5_DIGEST_LENGTH; ++i){
-        sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+        //sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+        hashedStr << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned>(hash[i]);
     }
 
-    return hashedStr;
+    return hashedStr.str();
 }
 
 std::string PasswordManager::hashPasswordSHA256(const std::string& inputPassword){
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, inputPassword.c_str(), inputPassword.length());
+    SHA256_Update(&sha256, inputPassword.data(), inputPassword.size());
 
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_Final(hash, &sha256);
 
-    char hashedStr[SHA256_DIGEST_LENGTH * 2 + 1];
+    //char hashedStr[SHA256_DIGEST_LENGTH * 2 + 1];
+    std::stringstream hashedStr;
     for(int i = 0; i < SHA256_DIGEST_LENGTH; ++i){
-        sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+        //sprintf(&hashedStr[i * 2], "%02x", hash[i]);
+        hashedStr << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned>(hash[i]);
     }
 
-    return hashedStr;
+    return hashedStr.str();
 }
 
 
@@ -174,13 +178,16 @@ bool PasswordManager::existsInFile(const std::string& username){
     return false;
 }
 
-void PasswordManager::testLogin(){
+void PasswordManager::testLogin(int &hashChoice){
     std::cout << "Enter username: ";
     std::cin >> username;
+
 
     if(existsInFile(username)){
         std::cout << "Enter password: ";
         std::cin >> password;
+
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 
         std::ifstream inFile("users.txt");
@@ -197,34 +204,36 @@ void PasswordManager::testLogin(){
                     std::string storedSalt = storedPasswordWithSalt.substr(0, saltPos);
                     std::string storedPassword = storedPasswordWithSalt.substr(saltPos + 1);
 
+                    std::cout << "Stored Salt: " << storedSalt << std::endl;
+                    std::cout << "Entered Password: " << password << std::endl;
+
                     std::string saltedInputPassword = storedSalt + password;
 
+                    std::cout << "Salted Input Password: " << saltedInputPassword << std::endl;
+
+                    std::string hashedInputPassword;
                     if(hashChoice == 1){
-                    std::string hashedInputPassword = hashPasswordMD5(saltedInputPassword);
-
-                        if(storedPassword == hashedInputPassword){
-                            std::cout << "OK Login successful! Welcome, " << username << "!" << std::endl;
-                            inFile.close();
-                            return;
-                        } else{
-                            std::cerr << "Login failed, incorrect password." << std::endl;
-                            inFile.close();
-                            return;
-                        }
+                        hashedInputPassword = hashPasswordMD5(saltedInputPassword);
+                        crackableHash = hashPasswordMD5(password);
                     } else if(hashChoice == 2){
-                        std::string hashedInputPassword = hashPasswordSHA256(saltedInputPassword);
-
-                            if(storedPassword == hashedInputPassword){
-                                std::cout << "Ok Login successful! Welcome, " << username << "!" << std::endl;
-                                inFile.close();
-                                return;
-                            } else{
-                                std::cerr << "Login failed, incorrect password." << std::endl;
-                                inFile.close();
-                                return;
-                            }
-
+                        hashedInputPassword = hashPasswordSHA256(saltedInputPassword);
+                        crackableHash256 = hashPasswordSHA256(password);
                     }
+
+                    std::cout << "Stored Password: " << storedPassword << std::endl;
+                    std::cout << "Hashed Input Password: " << hashedInputPassword << std::endl;
+
+                    if(storedPassword == hashedInputPassword){
+                        std::cout << "Ok Login successful! Welcome, " << username << "!" << std::endl;
+                        inFile.close();
+                        return;
+                    } else{
+                        std::cerr << "Login failed, incorrect password." << std::endl;
+                        inFile.close();
+                        return;
+                    }
+
+                
 
 
                     
@@ -260,6 +269,7 @@ void PasswordManager::menu(){
                 std::cout << "2. Login" << std::endl;
                 std::cout << "3. Exit program" << std::endl;
                 std::cout << "4. Crack Passwords" << std::endl;
+                std::cout << "5. Crack a single password" << std::endl;
                 int choice;
                 std::cin >> choice;
 
@@ -268,13 +278,16 @@ void PasswordManager::menu(){
                             createUser();
                             break;
                         case 2:
-                            testLogin();
+                            testLogin(hashChoice);
                             break;
                         case 3:
                             std::cout << "Shutting down program." << std::endl;
                             break;
                         case 4:
                             compareHashes(hashFilePath, commonPasswordsFilePath);
+                            break;
+                        case 5:
+                            checkSinglePassword(crackPassword);
                             break;
                         default:
                             std::cerr << "Invalid choice." << std::endl;
@@ -339,6 +352,47 @@ void PasswordManager::compareHashes(std::string& hashFilePath, std::string& comm
 
     if(!foundSome){
         std::cout << "No matches found inside the file." << std::endl;
+    }
+}
+
+void PasswordManager::checkSinglePassword(std::string& crackPassword){
+    std::cout << "Enter the password to check: ";
+    std::cin >> crackPassword;
+
+
+    std::string hashMD5 = hashPasswordMD5(crackPassword);
+    std::string hashSHA256 = hashPasswordSHA256(crackPassword);
+
+    std::ifstream hashFile("hashes.txt");
+    if(!hashFile.is_open()){
+        std::cerr << "Error opening hash file" << std::endl;
+        return;
+    }
+
+    std::unordered_map<std::string, std::string> passwordHashes;
+
+    std::string line;
+    while(std::getline(hashFile, line)){
+        size_t pos = line.find(':');
+        if(pos != std::string::npos){
+            std::string user = line.substr(0, pos);
+            std::string hash = line.substr(pos + 1);
+            passwordHashes[user] = hash;
+        }
+    }
+    hashFile.close();
+
+    bool foundMatch = false;
+
+    for(const auto& entry : passwordHashes){
+        if(entry.second == hashMD5 || entry.second == hashSHA256){
+            std::cout << "Match found for user: " << entry.first << " Password: " << crackPassword << std::endl;
+            foundMatch = true;
+        }
+    }
+
+    if(!foundMatch){
+        std::cout << "No matches found for the given password." << std::endl;
     }
 }
 

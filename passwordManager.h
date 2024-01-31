@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <sstream>
 
 class PasswordManager{
 private:
@@ -17,6 +18,7 @@ private:
     std::string commonPasswordsFilePath;
     std::string crackableHash;
     std::string crackableHash256;
+    std::string crackPassword;
 
 public:
     std::string username;
@@ -31,10 +33,11 @@ public:
     void saveToFile(const std::string &username, const std::string &hashedPassword, const std::string &salt);
     void saveCrackableToFile(const std::string &username, const std::string &hashedPassword);
     bool existsInFile(const std::string& username);
-    void testLogin();
+    void testLogin(int &hashChoice);
     std::string generateSalt();
     void menu();
     void compareHashes(std::string& hashFilePath, std::string& commonPasswordsFilePath);
+    void checkSinglePassword(std::string& crackPassword);
 
 };
 
