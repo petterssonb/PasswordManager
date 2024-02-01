@@ -179,20 +179,20 @@ bool PasswordManager::existsInFile(const std::string& username){
 }
 
 void PasswordManager::testLogin(int &hashChoice){
+    std::cout << "Did you create the account using safe mode or none safe mode?" << std::endl;
+    std::cout << "1. Unsafe mode." << std::endl;
+    std::cout << "2. Safe mode." << std::endl;
+    std::cin >> hashChoice;
+
     std::cout << "Enter username: ";
     std::cin >> username;
-
 
     if(existsInFile(username)){
         std::cout << "Enter password: ";
         std::cin >> password;
 
-
-
         std::ifstream inFile("users.txt");
         std::string line;
-
-        
 
         while(std::getline(inFile, line)){
             size_t pos = line.find(':');
@@ -205,16 +205,11 @@ void PasswordManager::testLogin(int &hashChoice){
                     std::string storedSalt = storedPasswordWithSalt.substr(0, saltPos);
                     std::string storedPassword = storedPasswordWithSalt.substr(saltPos + 1);
 
-
                     std::string saltedInputPassword = storedSalt + password;
-
 
                     std::string hashedInputPassword;
 
-                    std::cout << "Did you create the account using safe mode or none safe mode?" << std::endl;
-                    std::cout << "1. Unsafe mode." << std::endl;
-                    std::cout << "2. Safe mode." << std::endl;
-                    std::cin >> hashChoice;
+                    
 
                     if(hashChoice == 1){
                         hashedInputPassword = hashPasswordMD5(saltedInputPassword);
@@ -230,15 +225,10 @@ void PasswordManager::testLogin(int &hashChoice){
                         inFile.close();
                         return;
                     } else{
-                        std::cerr << "Login failed, incorrect password." << std::endl;
+                        std::cerr << "Login failed, incorrect password or wrong mode selected." << std::endl;
                         inFile.close();
                         return;
-                    }
-
-                
-
-
-                    
+                    }   
                 }
             }
         }
@@ -264,8 +254,6 @@ std::string PasswordManager::generateSalt(){
 }
 
 void PasswordManager::menu(){
-
-
             while(true){
                 std::cout << "1. Create User" << std::endl;
                 std::cout << "2. Login" << std::endl;
@@ -274,7 +262,6 @@ void PasswordManager::menu(){
                 std::cout << "5. Crack a single password" << std::endl;
                 int choice;
                 std::cin >> choice;
-
                     switch(choice){
                         case 1:
                             createUser();
@@ -295,8 +282,7 @@ void PasswordManager::menu(){
                             std::cerr << "Invalid choice." << std::endl;
                             std::cin.clear();
                             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                            break;
-                        
+                            break;  
                     }
                     if(choice == 3){
                         break;
