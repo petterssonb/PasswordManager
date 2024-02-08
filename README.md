@@ -10,6 +10,7 @@ I filen users.txt finns de säkra kontouppgifterna = username:salt:hashedAndSalt
 I filen hashes.txt finns de osäkra kontouppgifterna som man kan knäcka, lagrat = username:hashedPassword
 
 Filer med vanliga lösenord är 100kMostUsedPasswords.txt och example.txt
+
 I filen 100kMostUsedPasswords.txt längst ner finns kryddningen med mera "patterns" såsom sommar2024 osv.
 
 Programmet körs genom Makefile
