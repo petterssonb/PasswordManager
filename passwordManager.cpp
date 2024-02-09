@@ -80,7 +80,7 @@ bool PasswordManager::isValidName(const std::string& username){
 }
 
 bool PasswordManager::isValidPassword(const std::string& password){
-    std::regex pattern("^(?=.*[a-z]|.*[A-Z])(?=.*\\d)(?=.*[@#%^&+=!\\?]).{8,}$");
+    std::regex pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#%^&+=!\\?]).{8,}$");
 
     return std::regex_match(password, pattern);
 }
