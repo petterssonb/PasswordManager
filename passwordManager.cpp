@@ -384,6 +384,48 @@ void PasswordManager::checkSinglePassword(std::string& crackPassword){
     }
 }
 
+void PasswordManager::modifyPasswords(const std::string& filePath){
+    std::ifstream inFile(filePath);
+    if(!inFile.is_open()){
+        std::cerr << "Error opening file." << std::endl;
+        return;
+    }
+
+    std::ofstream outFile("temp.txt");
+    if(!outFile.is_open()){
+        std::cerr << "Error opening temp file." << std::endl;
+        inFile.close();
+        return;
+    }
+
+    std::string line;
+    while(std::getline(inFile, line)){
+
+        bool contains123 = (line.find("123") != std::string::npos);
+        bool contains2024 = (line.find("2024") != std::string::npos);
+
+        if(!contains123 && !contains2024){
+            std::string randomString = (rand() % 2 == 0) ? "123" : "2024";
+            line += randomString;
+
+        }
+
+        if(!ispunct(line.back())){
+            char specialChar = (rand() % 2 == 0) ? '!' : '?';
+            line += specialChar;
+        }
+
+        outFile << line << std::endl;
+    }
+
+    inFile.close();
+    outFile.close();
+
+    if(std::rename("temp.txt", filePath.c_str()) != 0){
+        std::cerr << "Error renaming file." << std::endl;
+    } else{}
+
+}
 
 
 

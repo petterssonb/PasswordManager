@@ -10,6 +10,9 @@
 #include <string>
 #include <unordered_map>
 #include <sstream>
+#include <cctype>
+#include <cstdlib>
+#include <ctime>
 
 class PasswordManager{
 private:
@@ -38,6 +41,7 @@ public:
     void menu();
     void compareHashes(std::string& hashFilePath, std::string& commonPasswordsFilePath);
     void checkSinglePassword(std::string& crackPassword);
+    void modifyPasswords(const std::string& filePath);
 
 };
 
