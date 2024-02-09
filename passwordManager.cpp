@@ -292,10 +292,10 @@ void PasswordManager::menu(){
 
 void PasswordManager::compareHashes(std::string& hashFilePath, std::string& commonPasswordsFilePath){
 
-    std::cout << "Enter path to hash file: ";
+    std::cout << "Enter name of the file you want to crack: ";
     std::cin >> hashFilePath;
 
-    std::cout << "Enter path to common passwords file: ";
+    std::cout << "Enter name of the common password file: ";
     std::cin >> commonPasswordsFilePath;
 
     std::unordered_map<std::string, std::string> passwordHashes;
