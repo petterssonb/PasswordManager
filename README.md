@@ -12,4 +12,5 @@ The software also demonstrates safer ways of storing passwords using SHA256 with
 
 To download the Makefile for Windows, click the link below. Then, right-click on the `Raw` button and select `Save link as...` to save the file to your computer.
 
-[Download Makefile](https://raw.githubusercontent.com/petterssonb/PasswordManager/main/MakefileWindows.txt)
+[Download Makefile](https://raw.githubusercontent.com/petterssonb/PasswordManager/main/MakefileWindows.txt
+)
