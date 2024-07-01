@@ -1,20 +1,15 @@
 # PasswordManager
 
-OBS!! Makefile som finns med i programmet går bara att köra på mac.
+A password manager/cracker used to demonstrate dictionary attacks for cracking passwords with MD5 and SHA256 hashes.
 
-Commits sker i main branchen.
+The software also demonstrates safer ways of storing passwords using SHA256 with salt.
 
-Programmet är uppdelat i en h fil och cpp fil.
+**Educational Purposes Only:** This program is strictly for educational purposes. The passwords utilized in this program are publicly available and commonly used, which you can easily find and download online. Any non-consensual use or misuse of this software that could cause harm is not the intended use.
 
-I filen users.txt finns de säkra kontouppgifterna = username:salt:hashedAndSaltedPasswords
+**Compatibility Note:** The Makefile committed in this repository only runs on macOS. To run it on Windows, be sure to use the Makefile version that corresponds to your OS.
 
-I filen hashes.txt finns de osäkra kontouppgifterna som man kan knäcka, lagrat = username:hashedPassword
+## Downloading the Makefile for Windows
 
-Filer med vanliga lösenord är 100kMostUsedPasswords.txt och example.txt
+To download the Makefile for Windows, click the link below. Then, right-click on the `Raw` button and select `Save link as...` to save the file to your computer.
 
-I filen 100kMostUsedPasswords.txt är alla lösenord genererade att lägga till antingen 2024 eller 123, samt
-ett special tecken i lösenord som inte redan har det i dom. Jag valde att ha 2024 som är det nuvarande året
-och 123 för det har jag själv använt mest när jag skapat lösenord, samt att ! och ? är de ända tecken jag
-har använt när ett lösenord ber om specialtecken.
-
-Programmet körs genom Makefile
+[Download Makefile](https://raw.githubusercontent.com/petterssonb/PasswordManager/main/MakefileWindows.txt)
