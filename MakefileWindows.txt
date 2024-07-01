@@ -1,0 +1,22 @@
+PROG = main.exe
+SRC = main.cpp passwordManager.cpp
+CFLAGS = -g -std=c++20 -Wall -Wno-deprecated-declarations
+LIBS = -LC:/OpenSSL-Win64/lib -lssl -lcrypto
+INCLUDES = -IC:/OpenSSL-Win64/include
+CC = g++
+CPPCHECK = cppcheck
+
+all: $(PROG)
+
+$(PROG): $(SRC)
+	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(SRC) $(LIBS) $(INCLUDES)
+
+clean:
+	del $(PROG)
+
+.PHONY: all clean cppcheck
+
+cppcheck:
+	@$(CPPCHECK) --quiet --enable=all --error-exitcode=1 \
+	--inline-suppr \
+	$(SRC)
