@@ -14,3 +14,30 @@ To download the Makefile for Windows, click the link below. Then, right-click on
 
 [Download Makefile](https://raw.githubusercontent.com/petterssonb/PasswordManager/main/MakefileWindows.txt
 )
+
+
+## How to run
+
+1. Clone the repository to your local machine
+
+```bash
+git clone https://github.com/petterssonb/PasswordManager.git
+```
+
+2. Navigate to the project directory.
+
+```bash
+cd PasswordManager
+```
+3. Make sure:
+ - You have g++ compiler (run the following in the terminal)
+```bash
+g++ --version
+```
+ - You have the right makefile for your OS
+
+
+4. Run the app:
+
+ - Run Makefile.
+ - Start managing your passwords with the cli!
