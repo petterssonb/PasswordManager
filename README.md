@@ -34,10 +34,50 @@ cd PasswordManager
 ```bash
 g++ --version
 ```
- - You have the right makefile for your OS
+**If you do not have the compiler, you should see something like this:**
+
+ 'g++' is not recognized as an internal or external command,
+operable program or batch file.
+
+**Then watch one of these below**
+
+[G++ for Windows](https://www.youtube.com/watch?v=GxFiUEO_3zM)
+
+[G++ for MacOS](https://www.youtube.com/watch?v=HYrXBoDJmcw)
+
+[G++ for Linux](https://www.youtube.com/watch?v=4e7pa6Pf3VQ)
+
+ - Make sure you have OpenSSL aswell
+```bash
+openssl version
+```
+ **If you don't have OpenSSL watch one of these below**
+
+ [OpenSSL for Windows](https://www.youtube.com/watch?v=bguFKIgEpoM)
+
+ [OpenSSL for MacOS](https://www.youtube.com/watch?v=dFy6O8moG0I)
+
+ [OpenSSL for Linux](https://www.youtube.com/watch?v=eDCOBL4xJpg)
 
 
-4. Run the app:
+### 4. Build the Project:
 
- - Run Makefile.
- - Start managing your passwords with the cli!
+```bash
+make
+```
+
+### 5. Run the Project
+
+#### MacOS or Linux
+```bash
+./main
+```
+
+#### Windows
+```bash
+./main.exe
+```
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
