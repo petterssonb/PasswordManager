@@ -132,7 +132,7 @@ void PasswordManager::saveToFile(const std::string &username, const std::string 
         return;
     }
 
-    std::ofstream usersFile("users.txt", std::ios::app);
+    std::ofstream usersFile("userdata/users.txt", std::ios::app);
 
     if(!usersFile.is_open()){
         std::cerr << "Error opening file." << std::endl;
@@ -148,7 +148,7 @@ void PasswordManager::saveCrackableToFile(const std::string &username, const std
     
 
 
-    std::ofstream hashFile("hashes.txt", std::ios::app);
+    std::ofstream hashFile("userdata/hashes.txt", std::ios::app);
 
     if(!hashFile.is_open()){
         std::cerr << "Error opening hashes file." << std::endl;
@@ -161,7 +161,7 @@ void PasswordManager::saveCrackableToFile(const std::string &username, const std
 }
 
 bool PasswordManager::existsInFile(const std::string& username){
-    std::ifstream inFile("users.txt");
+    std::ifstream inFile("userdata/users.txt");
     std::string line;
 
     while(std::getline(inFile, line)){
@@ -193,7 +193,7 @@ void PasswordManager::testLogin(int &hashChoice){
         std::cout << "Enter password: ";
         std::cin >> password;
 
-        std::ifstream inFile("users.txt");
+        std::ifstream inFile("userdata/users.txt");
         std::string line;
 
         while(std::getline(inFile, line)){
@@ -296,9 +296,11 @@ void PasswordManager::compareHashes(std::string& hashFilePath, std::string& comm
 
     std::cout << "Enter name of the file you want to crack: ";
     std::cin >> hashFilePath;
+    hashFilePath = "userdata/" + hashFilePath;
 
     std::cout << "Enter name of the common password file: ";
     std::cin >> commonPasswordsFilePath;
+    commonPasswordsFilePath = "commonpasswords/" + commonPasswordsFilePath;
 
     std::unordered_map<std::string, std::string> passwordHashes;
 
@@ -353,7 +355,7 @@ void PasswordManager::checkSinglePassword(std::string& crackPassword){
     std::string hashMD5 = hashPasswordMD5(crackPassword);
     std::string hashSHA256 = hashPasswordSHA256(crackPassword);
 
-    std::ifstream hashFile("hashes.txt");
+    std::ifstream hashFile("userdata/hashes.txt");
     if(!hashFile.is_open()){
         std::cerr << "Error opening hash file" << std::endl;
         return;

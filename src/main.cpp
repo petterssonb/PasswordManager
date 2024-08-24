@@ -2,7 +2,7 @@
 
 int main(){
     
-    std::string filePath = "100kMostUsedPasswords.txt";
+    std::string filePath = "commonpasswords/100kMostUsedPasswords.txt";
     PasswordManager passwordmanager;
     passwordmanager.modifyPasswords(filePath);
     passwordmanager.menu();
