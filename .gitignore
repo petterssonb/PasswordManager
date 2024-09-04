@@ -1,3 +1,30 @@
+### CMake ###
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Optional: if you use Ninja or other build tools
+/build.ninja
+/rules.ninja
+/*.dir/
+
+### Binaries ###
+*.exe
+*.out
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.app
+*.lib
+*.a
+
+### Mac OS ###
+.DS_Store
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
@@ -25,10 +52,9 @@ bin/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
-.DS_Store
-
-main.exe.dSYM/Contents
-main.dSYM/Contents
-main.exe
-main
+### Xcode (MacOS) ###
+*.dSYM
+*.dSYM/Contents
+*.dSYM/Contents/Resources/DWARF
+*.xcodeproj
+*.xcworkspace
