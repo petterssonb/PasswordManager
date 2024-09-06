@@ -8,7 +8,7 @@ Crackable hashes is found in hashes.txt. Safe way of storing with salt is found 
 
 **Educational Purposes Only:** This program is strictly for educational purposes. The passwords utilized in this program are publicly available and commonly used, which you can easily find and download online. Any non-consensual use or misuse of this software that could cause harm is not the intended use.
 
-**Compatibility Note:** The Makefile committed in this repository will run on Windows, Linux and MacOS. Be sure to follow the steps below in the "**How to run**" section to properly run the program.
+**Compatibility Note:** The project will run on Windows, Linux and MacOS by using Cmake. Be sure to follow the steps below in the "**How to run**" section to properly run the program.
 
 ## Project structure
 
